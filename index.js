@@ -59,79 +59,56 @@ client.on('ready', async () => {
 });
 
 /* ------------------------------
-   BOT ADDER PROTECTION
---------------------------------*/
-
-client.on('guildMemberAdd', async member => {
-  if (!member.user.bot) return;
-
-  const logs = await member.guild.fetchAuditLogs({ type: 28, limit: 1 }).catch(() => null);
-  if (!logs) return;
-
-  const entry = logs.entries.first();
-  if (!entry) return;
-
-  const adderId = entry.executor.id;
-
-  if (!saveData.trustedBotAdders.includes(adderId)) {
-    await member.kick("Untrusted user added a bot").catch(() => {});
-    saveData.raidLogs.push({
-      message: `Kicked bot ${member.user.tag} added by ${adderId}`,
-      timestamp: Date.now()
-    });
-  } else {
-    saveData.raidLogs.push({
-      message: `Bot ${member.user.tag} added by trusted ${adderId}`,
-      timestamp: Date.now()
-    });
-  }
-
-  saveAll();
-});
-
-/* ------------------------------
-   ADULT LOGS
---------------------------------*/
-
-function addAdultLog(text) {
-  saveData.adultLogs.push(`[${new Date().toLocaleString()}] ${text}`);
-  saveAll();
-}
-
-client.on('messageDelete', msg => addAdultLog(`Message deleted in #${msg.channel.name}: "${msg.content}"`));
-client.on('messageUpdate', (o, n) => addAdultLog(`Message edited in #${o.channel.name}: "${o.content}" → "${n.content}"`));
-client.on('guildMemberRemove', m => addAdultLog(`${m.user.tag} left or was kicked`));
-client.on('guildBanAdd', b => addAdultLog(`${b.user.tag} was banned`));
-client.on('channelCreate', c => addAdultLog(`Channel created: ${c.name}`));
-client.on('channelDelete', c => addAdultLog(`Channel deleted: ${c.name}`));
-client.on('roleCreate', r => addAdultLog(`Role created: ${r.name}`));
-client.on('roleDelete', r => addAdultLog(`Role deleted: ${r.name}`));
-
-/* ------------------------------
    EXPRESS DASHBOARD
 --------------------------------*/
 
 const app = express();
 app.use(bodyParser.json());
 
-/* ⭐ FIXED ROOT ROUTE — MUST BE ABOVE STATIC */
+/* ⭐ DEBUG LOG TO CONFIRM FILE EXISTS */
+console.log("Checking dashboard file:", path.join(__dirname, "public", "dashboard.html"));
+console.log("Directory listing of /public:");
+try {
+  console.log(fs.readdirSync(path.join(__dirname, "public")));
+} catch (e) {
+  console.log("PUBLIC FOLDER NOT FOUND");
+}
+
+/* ⭐ ROOT ROUTE — GUARANTEED WORKING */
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "dashboard.html"));
+  const filePath = path.join(__dirname, "public", "dashboard.html");
+  console.log("Serving root file:", filePath);
+
+  res.sendFile(filePath, err => {
+    if (err) {
+      console.error("ROOT ROUTE ERROR:", err);
+      res.status(500).send("Dashboard file not found on server.");
+    }
+  });
 });
 
 /* STATIC FILES */
 app.use(express.static(path.join(__dirname, 'public')));
 
-/* ACCESS CHECK */
+/* ------------------------------
+   ACCESS CHECK
+--------------------------------*/
+
 app.get('/api/access-check', (req, res) => {
   const userId = req.headers['x-user-id'];
   res.json({ allowed: allowedUsers.includes(userId) });
 });
 
-/* GUILD DATA */
+/* ------------------------------
+   GUILD DATA
+--------------------------------*/
+
 app.get('/api/guild/data', async (req, res) => {
   const guild = client.guilds.cache.get(GUILD_ID);
-  if (!guild) return res.json({ members: [], categories: [], textChannels: [] });
+
+  if (!guild) {
+    return res.json({ members: [], categories: [], textChannels: [] });
+  }
 
   const members = guild.members.cache
     .filter(m => !m.user.bot)
@@ -148,12 +125,18 @@ app.get('/api/guild/data', async (req, res) => {
   res.json({ members, categories, textChannels });
 });
 
-/* RAID LOGS */
+/* ------------------------------
+   RAID LOGS
+--------------------------------*/
+
 app.get('/api/raid/logs', (req, res) => {
   res.json({ logs: saveData.raidLogs });
 });
 
-/* STAFF SYSTEM */
+/* ------------------------------
+   STAFF SYSTEM
+--------------------------------*/
+
 app.post('/api/staff/add-points', (req, res) => {
   const { userId, points } = req.body;
   saveData.staffPoints[userId] = (saveData.staffPoints[userId] || 0) + Number(points);
@@ -182,7 +165,10 @@ app.get('/api/staff/all-points', (req, res) => {
   res.json({ points: result });
 });
 
-/* WARN / KICK / BAN */
+/* ------------------------------
+   WARN / KICK / BAN
+--------------------------------*/
+
 app.post('/api/staff/warn', (req, res) => {
   const { userId, reason } = req.body;
   saveData.raidLogs.push({
@@ -208,7 +194,10 @@ app.post('/api/staff/ban', async (req, res) => {
   res.json({ success: true });
 });
 
-/* TICKETS */
+/* ------------------------------
+   TICKETS
+--------------------------------*/
+
 app.post('/api/tickets/create', async (req, res) => {
   const guild = client.guilds.cache.get(GUILD_ID);
   const channel = guild.channels.cache.get(req.body.panelChannelId);
@@ -241,12 +230,18 @@ app.post('/api/tickets/create', async (req, res) => {
   res.json({ success: true });
 });
 
-/* TICKET LIST */
+/* ------------------------------
+   TICKET LIST
+--------------------------------*/
+
 app.get('/api/tickets/list', (req, res) => {
   res.json({ tickets: saveData.tickets });
 });
 
-/* CLOSE ALL TICKETS */
+/* ------------------------------
+   CLOSE ALL TICKETS
+--------------------------------*/
+
 app.post('/api/tickets/close-all', async (req, res) => {
   const guild = client.guilds.cache.get(GUILD_ID);
   guild.channels.cache.forEach(async ch => {
@@ -257,7 +252,10 @@ app.post('/api/tickets/close-all', async (req, res) => {
   res.json({ success: true });
 });
 
-/* TRUSTED BOT ADDERS */
+/* ------------------------------
+   TRUSTED BOT ADDERS
+--------------------------------*/
+
 app.post('/api/bots/add-trusted', (req, res) => {
   const executorId = req.headers['x-user-id'];
   const { userId } = req.body;
@@ -268,10 +266,6 @@ app.post('/api/bots/add-trusted', (req, res) => {
 
   if (!saveData.trustedBotAdders.includes(userId)) {
     saveData.trustedBotAdders.push(userId);
-    saveData.raidLogs.push({
-      message: `Trusted bot adder added: ${userId}`,
-      timestamp: Date.now()
-    });
     saveAll();
   }
 
@@ -300,18 +294,27 @@ app.get('/api/bots/trusted-list', (req, res) => {
   res.json({ trusted: list });
 });
 
-/* ADULT LOGS */
+/* ------------------------------
+   ADULT LOGS
+--------------------------------*/
+
 app.get('/api/adult/logs', (req, res) => {
   res.json({ logs: saveData.adultLogs.slice().reverse() });
 });
 
-/* SAVE ALL */
+/* ------------------------------
+   SAVE ALL
+--------------------------------*/
+
 app.post('/api/save-all', (req, res) => {
   saveAll();
   res.json({ success: true });
 });
 
-/* START SERVER */
+/* ------------------------------
+   START SERVER
+--------------------------------*/
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Dashboard running on port ${PORT}`);
