@@ -56,7 +56,6 @@ const client = new Client({
   ]
 });
 
-// CACHE MEMBERS ON STARTUP
 client.on('ready', async () => {
   const guild = client.guilds.cache.get(GUILD_ID);
   if (guild) {
@@ -150,13 +149,18 @@ const app = express();
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Access check
+/* ⭐ FIX: ROOT ROUTE */
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "dashboard.html"));
+});
+
+/* ACCESS CHECK */
 app.get('/api/access-check', (req, res) => {
   const userId = req.headers['x-user-id'];
   res.json({ allowed: allowedUsers.includes(userId) });
 });
 
-// GUILD DATA — HUMANS ONLY
+/* GUILD DATA */
 app.get('/api/guild/data', async (req, res) => {
   const guild = client.guilds.cache.get(GUILD_ID);
 
@@ -179,18 +183,12 @@ app.get('/api/guild/data', async (req, res) => {
   res.json({ members, categories, textChannels });
 });
 
-/* ------------------------------
-   RAID LOGS
---------------------------------*/
-
+/* RAID LOGS */
 app.get('/api/raid/logs', (req, res) => {
   res.json({ logs: saveData.raidLogs });
 });
 
-/* ------------------------------
-   STAFF SYSTEM
---------------------------------*/
-
+/* STAFF SYSTEM */
 app.post('/api/staff/add-points', (req, res) => {
   const { userId, points } = req.body;
   saveData.staffPoints[userId] = (saveData.staffPoints[userId] || 0) + Number(points);
@@ -260,10 +258,7 @@ app.post('/api/staff/ban', async (req, res) => {
   res.json({ success: true });
 });
 
-/* ------------------------------
-   TICKET PANEL + BUTTONS
---------------------------------*/
-
+/* TICKET PANEL */
 app.post('/api/tickets/create', async (req, res) => {
   const guild = client.guilds.cache.get(GUILD_ID);
   if (!guild) return res.json({ success: false });
@@ -310,11 +305,10 @@ app.post('/api/tickets/create', async (req, res) => {
   res.json({ success: true });
 });
 
-// Ticket button handler
+/* TICKET BUTTON HANDLER */
 client.on('interactionCreate', async interaction => {
   if (!interaction.isButton()) return;
 
-  // OPEN TICKET
   if (interaction.customId.startsWith("open_ticket_")) {
     const guild = client.guilds.cache.get(GUILD_ID);
     if (!guild) return;
@@ -360,7 +354,6 @@ client.on('interactionCreate', async interaction => {
     }
   }
 
-  // CLOSE TICKET
   if (interaction.customId.startsWith("close_ticket_")) {
     const channelId = interaction.customId.split("_")[2];
     const channel = interaction.guild.channels.cache.get(channelId);
@@ -378,10 +371,7 @@ client.on('interactionCreate', async interaction => {
   }
 });
 
-/* ------------------------------
-   TICKET LIST + CLOSE ALL
---------------------------------*/
-
+/* TICKET LIST */
 app.get('/api/tickets/list', (req, res) => {
   res.json({ tickets: saveData.tickets });
 });
@@ -401,10 +391,7 @@ app.post('/api/tickets/close-all', async (req, res) => {
   res.json({ success: true });
 });
 
-/* ------------------------------
-   TRUSTED BOT ADDERS
---------------------------------*/
-
+/* TRUSTED BOT ADDERS */
 app.post('/api/bots/add-trusted', (req, res) => {
   const executorId = req.headers['x-user-id'];
   const { userId } = req.body;
@@ -458,27 +445,18 @@ app.get('/api/bots/trusted-list', (req, res) => {
   res.json({ trusted: list });
 });
 
-/* ------------------------------
-   ADULT LOGS API
---------------------------------*/
-
+/* ADULT LOGS */
 app.get('/api/adult/logs', (req, res) => {
   res.json({ logs: saveData.adultLogs.slice().reverse() });
 });
 
-/* ------------------------------
-   SAVE ALL (manual)
---------------------------------*/
-
+/* SAVE ALL */
 app.post('/api/save-all', (req, res) => {
   saveAll();
   res.json({ success: true });
 });
 
-/* ------------------------------
-   START SERVER
---------------------------------*/
-
+/* START SERVER */
 const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`Dashboard running at http://localhost:3000/dashboard.html`);
