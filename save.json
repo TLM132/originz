@@ -1,0 +1,86 @@
+{
+  "raidLogs": [
+    {
+      "message": "Punished users who added untrusted bots.",
+      "timestamp": 1792282319859
+    },
+    {
+      "message": "Kicked bots from untrusted users.",
+      "timestamp": 1792282322494
+    },
+    {
+      "message": "Warned user 1482671904488685673: Panel warn",
+      "timestamp": 1792282666420
+    },
+    {
+      "message": "Warned user : Panel warn",
+      "timestamp": 1792283564503
+    },
+    {
+      "message": "Punished users who added untrusted bots.",
+      "timestamp": 1792283580478
+    },
+    {
+      "message": "Kicked bots from untrusted users.",
+      "timestamp": 1792283581631
+    },
+    {
+      "message": "Trusted bot adder added: 1482671904488685673 by 1482671904488685673",
+      "timestamp": 1792285050413
+    },
+    {
+      "message": "Trusted bot adder removed: 1482671904488685673 by 1482671904488685673",
+      "timestamp": 1792285052667
+    },
+    {
+      "message": "Trusted bot adder added: 1482671904488685673 by 1482671904488685673",
+      "timestamp": 1792285054675
+    },
+    {
+      "message": "Trusted user 1482671904488685673 added bot FlaviBot#2819 (allowed)",
+      "timestamp": 1792285067980
+    },
+    {
+      "message": "Trusted bot adder removed: 1482671904488685673 by 1482671904488685673",
+      "timestamp": 1792285078473
+    },
+    {
+      "message": "Kicked bot FlaviBot#2819 added by untrusted user 1482671904488685673",
+      "timestamp": 1792285098893
+    }
+  ],
+  "staffPoints": {
+    "1482671904488685673": 10
+  },
+  "tickets": [],
+  "trustedBotAdders": [
+    ""
+  ],
+  "adultLogs": [
+    "[10/18/2026, 11:21:17 AM] Message deleted in #general: \"s\"",
+    "[10/18/2026, 11:28:41 AM] Message edited in #general: \"\" → \"\"",
+    "[10/18/2026, 11:28:44 AM] Channel created: ticket-mas__2350",
+    "[10/18/2026, 11:30:43 AM] Message edited in #general: \"\" → \"\"",
+    "[10/18/2026, 11:30:43 AM] Channel created: ticket-mas__2350",
+    "[10/18/2026, 11:30:45 AM] Message edited in #ticket-mas__2350: \"\" → \"\"",
+    "[10/18/2026, 11:30:47 AM] Channel deleted: ticket-mas__2350",
+    "[10/18/2026, 11:30:49 AM] Channel created: ticket-mas__2350",
+    "[10/18/2026, 11:30:54 AM] Message edited in #ticket-mas__2350: \"\" → \"\"",
+    "[10/18/2026, 11:32:09 AM] Channel created: ticket-mas__2350",
+    "[10/18/2026, 11:32:15 AM] Channel deleted: ticket-mas__2350",
+    "[10/18/2026, 11:32:15 AM] Channel deleted: ticket-mas__2350",
+    "[10/18/2026, 11:32:21 AM] Channel created: ticket-mas__2350",
+    "[10/18/2026, 11:32:23 AM] Message edited in #ticket-mas__2350: \"\" → \"\"",
+    "[10/18/2026, 11:32:25 AM] Channel deleted: ticket-mas__2350",
+    "[10/18/2026, 11:42:12 AM] Message edited in #general: \"\" → \"\"",
+    "[10/18/2026, 11:42:13 AM] Channel created: ticket-mas__2350",
+    "[10/18/2026, 11:42:15 AM] Message edited in #ticket-mas__2350: \"\" → \"\"",
+    "[10/18/2026, 11:42:17 AM] Channel deleted: ticket-mas__2350",
+    "[10/18/2026, 11:57:47 AM] Role created in Test: FlaviBot",
+    "[10/18/2026, 11:58:08 AM] Role deleted in Test: FlaviBot",
+    "[10/18/2026, 11:58:08 AM] FlaviBot#2819 left or was kicked from Test",
+    "[10/18/2026, 11:58:17 AM] Role created in Test: FlaviBot",
+    "[10/18/2026, 11:58:18 AM] Role deleted in Test: FlaviBot",
+    "[10/18/2026, 11:58:18 AM] FlaviBot#2819 left or was kicked from Test"
+  ]
+}
